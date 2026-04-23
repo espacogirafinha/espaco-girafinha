@@ -79,3 +79,12 @@ agenthub/agents/youtube/db
 # Mobile development
 android-sdk/ uploaded_images/pack1.zip
 uploaded_images/pack1.zip
+-e 
+# Environment and credential files
+.env
+.env.*
+*.env
+credentials.json
+*.pem
+*.key
+.credentials
