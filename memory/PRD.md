@@ -1,7 +1,8 @@
 # PRD - Espaço Girafinha Website
 
 ## Changelog Recente
-- **2026-02-23**: Correção de UI mobile — botão CTA do Hero agora centrado (`items-center`), texto dos cards de Packages reduzido em mobile (`text-xs md:text-sm`) e frase "Insuflável..." encurtada em `mock.js` para caber numa linha.
+- **2026-02-24**: Adicionado **Open Graph + Twitter Card** completos no `index.html` (partilhas bonitas em WhatsApp/Facebook), **Schema.org LocalBusiness + EventVenue JSON-LD** (Google SEO: morada, horários, ofertas, redes sociais, aggregateRating), e criado **Blog "Dicas & Ideias"** em `/dicas` com 4 artigos iniciais + página individual em `/dicas/:slug` (com JSON-LD `BlogPosting` por artigo). Link "Dicas & Ideias" adicionado no header (desktop) + footer.
+- **2026-02-23**: Correção de UI mobile — botão "Marcar Visita sem Compromisso" centrado; 3 frases do cabeçalho da secção Pacotes em 1 linha cada em mobile.
 
 ## Declaração do Problema Original
 Criar um website moderno, colorido e responsivo de página única para um espaço de festas infantis chamado "Espaço Girafinha" localizado em Silves, Algarve, Portugal. O design deve ser inspirado no Instagram da marca - divertido, colorido, amigável para crianças, com tons suaves e elementos divertidos.

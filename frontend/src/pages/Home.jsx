@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Input } from '../components/ui/input';
@@ -108,6 +109,26 @@ const Home = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Reset SEO meta tags when returning to Home from blog pages
+  useEffect(() => {
+    document.title = 'Espaço Girafinha | Festas Infantis em Silves, Algarve';
+    const setMeta = (selector, attr, value) => {
+      const el = document.querySelector(selector);
+      if (el) el.setAttribute(attr, value);
+    };
+    const homeDesc = 'Festas infantis inesquecíveis em Silves e Algarve. Espaço privado, decoração personalizada, animação e catering — pacotes desde 220€. Marque a sua festa pelo WhatsApp.';
+    const ogDesc = 'A festa perfeita para o seu filho — sem stress. Espaço privado em Silves com decoração, animação e catering incluído. Pacotes desde 220€.';
+    setMeta('meta[name="description"]', 'content', homeDesc);
+    setMeta('meta[property="og:title"]', 'content', 'Espaço Girafinha | Festas Infantis em Silves, Algarve');
+    setMeta('meta[property="og:description"]', 'content', ogDesc);
+    setMeta('meta[property="og:url"]', 'content', 'https://espacogirafinha.pt/');
+    setMeta('meta[property="og:type"]', 'content', 'website');
+    setMeta('meta[property="og:image"]', 'content', 'https://espacogirafinha.pt/hero-party.jpg');
+    setMeta('meta[name="twitter:title"]', 'content', 'Espaço Girafinha | Festas Infantis em Silves, Algarve');
+    setMeta('meta[name="twitter:description"]', 'content', ogDesc);
+    setMeta('meta[name="twitter:image"]', 'content', 'https://espacogirafinha.pt/hero-party.jpg');
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-teal-50 via-yellow-50 to-green-50">
       {/* Header */}
@@ -121,10 +142,11 @@ const Home = () => {
                 <p className="text-xs text-gray-600">Silves, Algarve</p>
               </div>
             </div>
-            <nav className="hidden md:flex gap-6">
+            <nav className="hidden md:flex gap-6 items-center">
               <a href="#sobre" className="text-gray-700 hover:text-teal-500 transition-colors">Sobre</a>
               <a href="#pacotes" className="text-gray-700 hover:text-teal-500 transition-colors">Pacotes</a>
               <a href="#galeria" className="text-gray-700 hover:text-teal-500 transition-colors">Galeria</a>
+              <Link to="/dicas" className="text-teal-600 font-semibold hover:text-teal-700 transition-colors" data-testid="nav-dicas">Dicas & Ideias</Link>
               <a href="#contacto" className="text-gray-700 hover:text-teal-500 transition-colors">Contacto</a>
             </nav>
           </div>
@@ -1118,6 +1140,12 @@ const Home = () => {
           
           {/* Legal Links */}
           <div className="flex flex-wrap justify-center gap-4 mb-4 text-sm">
+            <Link
+              to="/dicas"
+              className="text-gray-400 hover:text-white transition-colors underline"
+              data-testid="footer-blog-link">
+              Dicas & Ideias
+            </Link>
             <button
               onClick={() => setShowPrivacyModal(true)}
               className="text-gray-400 hover:text-white transition-colors underline">
