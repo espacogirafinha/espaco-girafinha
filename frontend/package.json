@@ -57,7 +57,8 @@
   },
   "scripts": {
     "start": "craco start",
-    "build": "craco build",
+    "build": "node scripts/generate-sitemap.js && craco build",
+    "sitemap": "node scripts/generate-sitemap.js",
     "test": "craco test"
   },
   "browserslist": {

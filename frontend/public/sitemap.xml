@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/0.9">
+  <url>
+    <loc>https://espacogirafinha.pt/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://espacogirafinha.pt/dicas</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://espacogirafinha.pt/dicas/como-organizar-festa-aniversario-crianca-passo-a-passo</loc>
+    <lastmod>2025-12-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://espacogirafinha.pt/gallery/festa-aniversario.jpg</image:loc>
+      <image:title>Como Organizar a Festa de Aniversário Perfeita: Guia Passo a Passo</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://espacogirafinha.pt/dicas/10-ideias-temas-festa-infantil-algarve</loc>
+    <lastmod>2025-12-08</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://espacogirafinha.pt/gallery/decoracao-barbie.jpg</image:loc>
+      <image:title>10 Ideias de Temas para Festas Infantis (Que as Crianças Adoram)</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://espacogirafinha.pt/dicas/festa-infantil-sem-stress-7-dicas-pais</loc>
+    <lastmod>2025-11-28</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://espacogirafinha.pt/gallery/castelo-insuflavel.jpg</image:loc>
+      <image:title>Festa Infantil Sem Stress: 7 Dicas de Ouro para os Pais</image:title>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://espacogirafinha.pt/dicas/porque-escolher-espaco-festas-vs-festa-casa</loc>
+    <lastmod>2025-11-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <image:image>
+      <image:loc>https://espacogirafinha.pt/gallery/piscina-bolas-turquesa.jpg</image:loc>
+      <image:title>Festa em Casa ou em Espaço Privado? Vantagens e Desvantagens</image:title>
+    </image:image>
+  </url>
+
+</urlset>

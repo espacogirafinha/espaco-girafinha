@@ -1,0 +1,38 @@
+import React, { useEffect, useState } from 'react';
+import { MessageCircle } from 'lucide-react';
+import { useWhatsApp } from '../../hooks/useWhatsApp';
+
+const FloatingWhatsApp = () => {
+  const { openWhatsApp } = useWhatsApp();
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  // Tooltip appears after 3s, hides after 5s more
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowTooltip(true);
+      setTimeout(() => setShowTooltip(false), 5000);
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div className="fixed bottom-6 right-6 z-50">
+      {showTooltip && (
+        <div className="absolute bottom-full right-0 mb-2 bg-gray-900 text-white px-4 py-2 rounded-lg shadow-xl whitespace-nowrap animate-bounce">
+          💬 Dúvidas? Fala connosco!
+          <div className="absolute bottom-0 right-8 transform translate-y-1/2 rotate-45 w-2 h-2 bg-gray-900"></div>
+        </div>
+      )}
+
+      <button
+        onClick={() => openWhatsApp()}
+        data-testid="floating-whatsapp-button"
+        className="bg-green-600 hover:bg-green-700 text-white p-5 rounded-full shadow-2xl hover:shadow-3xl transition-all duration-300 hover:scale-110 animate-pulse"
+        aria-label="Contactar via WhatsApp">
+        <MessageCircle className="h-7 w-7" />
+      </button>
+    </div>
+  );
+};
+
+export default FloatingWhatsApp;

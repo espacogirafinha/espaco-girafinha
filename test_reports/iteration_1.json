@@ -1,0 +1,25 @@
+{
+  "summary": "Frontend-only regression test after Home.jsx refactor (1300+ -> 64 lines, split into 14 section components + useWhatsApp hook). All flows preserved. 40 checks executed via Playwright across /, /dicas and /dicas/<slug>. 0 console errors. All WhatsApp CTAs, gallery & testimonial carousels, FAQ toggle, legal modals, contact form, blog routes, sitemap.xml, robots.txt and OG/JSON-LD meta tags verified working.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "useWhatsApp.js uses window.open(url, '_blank') — works in production but on desktop wa.me redirects to api.whatsapp.com (still preserves phone & text). Acceptable behaviour.",
+    "Gallery.jsx scrollToIndex uses scrollWidth/images.length which works only because all cards are equal width; consider using getBoundingClientRect for safer indexing if card widths ever change.",
+    "FloatingWhatsApp tooltip nested setTimeout inside setTimeout — minor: the inner timeout is not cleared on unmount; harmless but could leak in fast navigation.",
+    "Home.jsx mutates document head meta tags directly inside useEffect — works but could be moved to react-helmet for consistency across routes."
+  ],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A (frontend-only)", "frontend": "100% (40/40 functional checks; 9 WhatsApp popups verified via redirected URL containing phone=351930650082)"},
+  "test_credentials": "N/A",
+  "seed_data_creation": "None - all data is client-side mock (mock.js, blog.js)",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "All WhatsApp CTAs use useWhatsApp hook opening wa.me/351930650082. On Playwright desktop browser wa.me auto-redirects to api.whatsapp.com/send/?phone=351930650082&text=... — when asserting, accept either domain provided phone number and (when applicable) message text are present. Verified working: hero-cta-orcamento, hero-cta-precos (scrolls to #pacotes), about-cta-visita, package-cta-1/2/3, gallery-cta, faq-cta, contact-submit (pre-fills name/phone/email/message), floating-whatsapp-button, nav-dicas, footer-blog-link. Carousels carousel-espaco/decoracao/catering scroll horizontally; testimonial dots (5) cycle the active slide. PrivacyModal & TermsModal open/close via X and Fechar. /dicas lists 4 blog posts (12 anchor links because cards have multiple internal links each). /dicas/<slug> renders article with WhatsApp/Facebook/Copy share. sitemap.xml & robots.txt return 200. OG, twitter:card and JSON-LD Schema.org present in initial HTML. 0 console errors on /, /dicas and /dicas/<slug>.",
+  "rca of the issue": "N/A - no functional regressions detected after refactor."
+}
