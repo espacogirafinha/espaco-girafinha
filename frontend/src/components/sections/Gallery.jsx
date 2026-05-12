@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '../ui/button';
-import { galleryImages } from '../../data/mock';
 import { useWhatsApp } from '../../hooks/useWhatsApp';
 
 const CATEGORIES = [
@@ -86,7 +85,7 @@ const GalleryCategory = ({ label, carouselId, images }) => {
   );
 };
 
-const Gallery = () => {
+const Gallery = ({ galleryImages = [] }) => {
   const { openWhatsApp } = useWhatsApp();
 
   return (

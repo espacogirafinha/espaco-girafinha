@@ -13,10 +13,12 @@ import Contact from '../components/sections/Contact';
 import SiteFooter from '../components/sections/SiteFooter';
 import { PrivacyModal, TermsModal } from '../components/sections/LegalModals';
 import FloatingWhatsApp from '../components/sections/FloatingWhatsApp';
+import { useSiteContent } from '../hooks/useSiteContent';
 
 const Home = () => {
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showTerms, setShowTerms] = useState(false);
+  const { content } = useSiteContent();
 
   // Reset SEO meta tags when returning to Home from blog pages
   useEffect(() => {
@@ -43,12 +45,12 @@ const Home = () => {
       <SiteHeader />
       <Hero />
       <About />
-      <Packages />
+      <Packages packages={content.packages} />
       <FoodOptions />
-      <Gallery />
+      <Gallery galleryImages={content.gallery} />
       <WhyChooseUs />
-      <Testimonials />
-      <FAQ />
+      <Testimonials testimonials={content.testimonials} />
+      <FAQ faqs={content.faqs} />
       <InstagramFeed />
       <Contact />
       <SiteFooter onOpenPrivacy={() => setShowPrivacy(true)} onOpenTerms={() => setShowTerms(true)} />

@@ -5,8 +5,8 @@ import BlogLayout from '../components/BlogLayout';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
-import { blogPosts } from '../data/blog';
 import { contactInfo } from '../data/mock';
+import { useSiteContent } from '../hooks/useSiteContent';
 
 const formatDate = (iso) => {
   try {
@@ -21,6 +21,9 @@ const formatDate = (iso) => {
 };
 
 const Blog = () => {
+  const { content } = useSiteContent();
+  const blogPosts = content.blog;
+
   useEffect(() => {
     document.title = 'Dicas & Ideias para Festas Infantis | Espaço Girafinha';
 

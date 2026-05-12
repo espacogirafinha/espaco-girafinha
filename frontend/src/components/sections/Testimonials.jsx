@@ -1,27 +1,27 @@
 import React, { useEffect, useState } from 'react';
 import { ChevronLeft, ChevronRight, Quote } from 'lucide-react';
 import { Card, CardContent, CardHeader } from '../ui/card';
-import { testimonials } from '../../data/mock';
 
-const Testimonials = () => {
+const Testimonials = ({ testimonials = [] }) => {
   const [current, setCurrent] = useState(0);
+  const total = testimonials.length;
 
   // Auto-slide every 5s
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrent((prev) => (prev + 1) % testimonials.length);
+      setCurrent((prev) => (total ? (prev + 1) % total : 0));
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [total]);
 
   // Scroll carousel when index changes
   useEffect(() => {
     const carousel = document.getElementById('testimonials-carousel');
-    if (carousel) {
-      const cardWidth = carousel.scrollWidth / testimonials.length;
+    if (carousel && total) {
+      const cardWidth = carousel.scrollWidth / total;
       carousel.scrollTo({ left: cardWidth * current, behavior: 'smooth' });
     }
-  }, [current]);
+  }, [current, total]);
 
   return (
     <section className="py-20 px-4 bg-white">
@@ -34,13 +34,13 @@ const Testimonials = () => {
 
         <div className="relative group/testimonials">
           <button
-            onClick={() => setCurrent((p) => (p - 1 + testimonials.length) % testimonials.length)}
+            onClick={() => setCurrent((p) => (p - 1 + total) % total)}
             className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 opacity-0 group-hover/testimonials:opacity-100 transition-opacity duration-300"
             aria-label="Anterior">
             <ChevronLeft className="w-6 h-6 text-teal-600" />
           </button>
           <button
-            onClick={() => setCurrent((p) => (p + 1) % testimonials.length)}
+            onClick={() => setCurrent((p) => (p + 1) % total)}
             className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/90 hover:bg-white shadow-lg rounded-full p-3 opacity-0 group-hover/testimonials:opacity-100 transition-opacity duration-300"
             aria-label="Próximo">
             <ChevronRight className="w-6 h-6 text-teal-600" />
@@ -55,7 +55,7 @@ const Testimonials = () => {
                   }`}>
                     <CardHeader>
                       <div className="flex gap-1 mb-4">
-                        {[...Array(t.rating)].map((_, i) => (
+                        {[...Array(t.rating ?? 5)].map((_, i) => (
                           <svg key={i} className="w-5 h-5 fill-teal-500" viewBox="0 0 20 20">
                             <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z" />
                           </svg>

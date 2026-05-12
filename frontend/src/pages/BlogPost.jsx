@@ -5,8 +5,8 @@ import BlogLayout from '../components/BlogLayout';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
-import { getPostBySlug, getRelatedPosts } from '../data/blog';
 import { contactInfo } from '../data/mock';
+import { useSiteContent } from '../hooks/useSiteContent';
 
 const formatDate = (iso) => {
   try {
@@ -22,7 +22,8 @@ const formatDate = (iso) => {
 
 const BlogPost = () => {
   const { slug } = useParams();
-  const post = getPostBySlug(slug);
+  const { content, loading } = useSiteContent();
+  const post = content.blog.find((p) => p.slug === slug);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
@@ -50,9 +51,10 @@ const BlogPost = () => {
     };
   }, [post]);
 
+  if (!post && loading) return null;
   if (!post) return <Navigate to="/dicas" replace />;
 
-  const related = getRelatedPosts(slug, 3);
+  const related = content.blog.filter((p) => p.slug !== slug).slice(0, 3);
 
   const openWhatsApp = () => {
     const msg = `Olá! Vi o artigo "${post.title}" no vosso blog e gostava de saber mais.`;

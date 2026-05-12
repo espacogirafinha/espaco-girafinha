@@ -2,10 +2,9 @@ import React from 'react';
 import { Check } from 'lucide-react';
 import { Button } from '../ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
-import { packages } from '../../data/mock';
 import { useWhatsApp } from '../../hooks/useWhatsApp';
 
-const Packages = () => {
+const Packages = ({ packages = [] }) => {
   const { openWhatsApp } = useWhatsApp();
 
   return (
@@ -60,7 +59,7 @@ const Packages = () => {
                 </div>
 
                 <div className="bg-teal-50 rounded-lg p-3 mb-4">
-                  {pkg.schedules.map((schedule, index) => (
+                  {(pkg.schedules ?? []).map((schedule, index) => (
                     <p key={index} className="text-sm font-semibold text-gray-700">{schedule}</p>
                   ))}
                 </div>
@@ -77,7 +76,7 @@ const Packages = () => {
                 <div className="mb-4">
                   <p className="text-xs font-bold text-gray-800 uppercase tracking-wide mb-3">Inclui:</p>
                   <ul className="space-y-2">
-                    {pkg.includes.map((item, index) => (
+                    {(pkg.includes ?? []).map((item, index) => (
                       <li key={index} className="flex items-start gap-2 text-sm text-gray-700">
                         <Check className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
                         <span className="leading-tight">{item}</span>

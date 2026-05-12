@@ -1,9 +1,8 @@
 import React from 'react';
 import { Button } from '../ui/button';
-import { faqs } from '../../data/mock';
 import { useWhatsApp } from '../../hooks/useWhatsApp';
 
-const FAQ = () => {
+const FAQ = ({ faqs = [] }) => {
   const { openWhatsApp } = useWhatsApp();
 
   return (
