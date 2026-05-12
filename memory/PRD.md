@@ -1,7 +1,8 @@
 # PRD - Espaço Girafinha Website
 
 ## Changelog Recente
-- **2026-02-24**: Adicionado **Open Graph + Twitter Card** completos no `index.html` (partilhas bonitas em WhatsApp/Facebook), **Schema.org LocalBusiness + EventVenue JSON-LD** (Google SEO: morada, horários, ofertas, redes sociais, aggregateRating), e criado **Blog "Dicas & Ideias"** em `/dicas` com 4 artigos iniciais + página individual em `/dicas/:slug` (com JSON-LD `BlogPosting` por artigo). Link "Dicas & Ideias" adicionado no header (desktop) + footer.
+- **2026-02-25**: 🟢 **Sitemap.xml + robots.txt** criados em `/public/`, com script automático `yarn sitemap` que regenera a partir de `data/blog.js`. 🟡 **Refactor do Home.jsx** concluído: de 1325 linhas para 64 linhas. JSX dividido em 14 componentes em `/components/sections/` (SiteHeader, Hero, About, Packages, FoodOptions, Gallery, WhyChooseUs, Testimonials, FAQ, InstagramFeed, Contact, SiteFooter, LegalModals, FloatingWhatsApp) + hook `useWhatsApp`. Testado via testing agent: 100% (40/40), 0 regressões.
+- **2026-02-24**: Adicionado **Open Graph + Twitter Card** completos, **Schema.org LocalBusiness + EventVenue JSON-LD**, criado **Blog "Dicas & Ideias"** em `/dicas` com 4 artigos + página individual, botões de partilha (WhatsApp/Facebook/Copiar link).
 - **2026-02-23**: Correção de UI mobile — botão "Marcar Visita sem Compromisso" centrado; 3 frases do cabeçalho da secção Pacotes em 1 linha cada em mobile.
 
 ## Declaração do Problema Original

@@ -8,11 +8,15 @@ const FloatingWhatsApp = () => {
 
   // Tooltip appears after 3s, hides after 5s more
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const hideTimer = { current: null };
+    const showTimer = setTimeout(() => {
       setShowTooltip(true);
-      setTimeout(() => setShowTooltip(false), 5000);
+      hideTimer.current = setTimeout(() => setShowTooltip(false), 5000);
     }, 3000);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(showTimer);
+      if (hideTimer.current) clearTimeout(hideTimer.current);
+    };
   }, []);
 
   return (
