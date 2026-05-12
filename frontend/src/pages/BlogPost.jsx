@@ -1,6 +1,6 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useParams, Navigate } from 'react-router-dom';
-import { Calendar, Clock, ArrowLeft, MessageCircle, Tag } from 'lucide-react';
+import { Calendar, Clock, ArrowLeft, MessageCircle, Tag, Share2, Facebook } from 'lucide-react';
 import BlogLayout from '../components/BlogLayout';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
@@ -23,6 +23,7 @@ const formatDate = (iso) => {
 const BlogPost = () => {
   const { slug } = useParams();
   const post = getPostBySlug(slug);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     if (!post) return;
@@ -59,6 +60,44 @@ const BlogPost = () => {
       `https://wa.me/${contactInfo.whatsapp.replace(/\+/g, '')}?text=${encodeURIComponent(msg)}`,
       '_blank'
     );
+  };
+
+  const postUrl = typeof window !== 'undefined'
+    ? window.location.href
+    : `https://espacogirafinha.pt/dicas/${post.slug}`;
+
+  const shareWhatsApp = () => {
+    const text = `📚 ${post.title}\n\n${post.excerpt}\n\nLeia o artigo completo:`;
+    window.open(
+      `https://api.whatsapp.com/send?text=${encodeURIComponent(text + ' ' + postUrl)}`,
+      '_blank'
+    );
+  };
+
+  const shareFacebook = () => {
+    window.open(
+      `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(postUrl)}`,
+      '_blank',
+      'width=600,height=500'
+    );
+  };
+
+  const copyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(postUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // fallback: select via temporary input
+      const input = document.createElement('input');
+      input.value = postUrl;
+      document.body.appendChild(input);
+      input.select();
+      try { document.execCommand('copy'); } catch (e) { /* noop */ }
+      document.body.removeChild(input);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   // BlogPosting JSON-LD
@@ -146,6 +185,38 @@ const BlogPost = () => {
             ))}
           </div>
         )}
+
+        {/* Share buttons */}
+        <div className="mt-8 bg-white rounded-2xl border border-gray-200 p-5 md:p-6">
+          <div className="flex items-center gap-2 mb-4">
+            <Share2 className="h-5 w-5 text-teal-600" />
+            <h3 className="text-base md:text-lg font-bold text-gray-900">Gostou? Partilhe com outros pais!</h3>
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={shareWhatsApp}
+              data-testid="share-whatsapp-button"
+              className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2.5 rounded-full text-sm font-semibold transition-colors shadow-sm">
+              <MessageCircle className="h-4 w-4" /> WhatsApp
+            </button>
+            <button
+              onClick={shareFacebook}
+              data-testid="share-facebook-button"
+              className="inline-flex items-center gap-2 bg-[#1877F2] hover:bg-[#0e64d2] text-white px-4 py-2.5 rounded-full text-sm font-semibold transition-colors shadow-sm">
+              <Facebook className="h-4 w-4" /> Facebook
+            </button>
+            <button
+              onClick={copyLink}
+              data-testid="share-copy-link-button"
+              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold transition-colors border ${
+                copied
+                  ? 'bg-teal-50 text-teal-700 border-teal-300'
+                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+              }`}>
+              <Share2 className="h-4 w-4" /> {copied ? 'Link copiado!' : 'Copiar link'}
+            </button>
+          </div>
+        </div>
 
         {/* Inline CTA */}
         <div className="mt-10 bg-gradient-to-br from-teal-50 to-yellow-50 rounded-2xl p-6 md:p-8 text-center">
