@@ -7,7 +7,7 @@ import { Textarea } from '../components/ui/textarea';
 import { Badge } from '../components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
-import { fetchAdminContent, tableForKey } from '../lib/cms';
+import { fetchAdminContent, getFallbackContent, tableForKey } from '../lib/cms';
 
 const emptyItems = {
   packages: {
@@ -295,6 +295,23 @@ const ContentEditor = ({ active, items, onReload }) => {
     else await onReload();
   };
 
+  const importInitialContent = async () => {
+    const fallback = getFallbackContent()[active] ?? [];
+    if (!fallback.length) return;
+
+    setSaving(true);
+    setError('');
+    const rows = fallback.map((item, index) => toDbPayload(active, {
+      ...item,
+      sort_order: item.sort_order ?? index,
+      is_published: true,
+    }));
+    const { error: importError } = await supabase.from(tableForKey(active)).insert(rows);
+    if (importError) setError(importError.message);
+    else await onReload();
+    setSaving(false);
+  };
+
   return (
     <div className="grid lg:grid-cols-[360px_1fr] gap-6">
       <Card>
@@ -307,6 +324,16 @@ const ContentEditor = ({ active, items, onReload }) => {
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
+          {items.length === 0 && (
+            <div className="rounded-lg border border-dashed border-teal-300 bg-teal-50 p-4">
+              <p className="text-sm text-teal-900 font-semibold mb-2">Esta secção ainda não tem dados.</p>
+              <p className="text-xs text-teal-800 mb-3">Pode importar o conteúdo atual do site e depois editar.</p>
+              <Button onClick={importInitialContent} disabled={saving} size="sm" className="bg-teal-600 hover:bg-teal-700">
+                {saving ? 'A importar...' : 'Importar conteúdo atual'}
+              </Button>
+            </div>
+          )}
+
           {items.map((item) => (
             <div key={item.id} className="border rounded-lg p-3 bg-white">
               <button onClick={() => startEdit(item)} className="text-left w-full">
