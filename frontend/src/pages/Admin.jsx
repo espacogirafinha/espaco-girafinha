@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { ArrowDown, ArrowUp, Copy, Eye, LogOut, Plus, Save, Trash2, Upload } from 'lucide-react';
+import { ArrowDown, ArrowUp, CalendarDays, Copy, Eye, LogOut, MessageCircle, Plus, Save, Trash2, Upload } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
@@ -61,6 +61,7 @@ const emptyItems = {
 };
 
 const sections = [
+  { key: 'reservations', label: 'Reservas' },
   { key: 'packages', label: 'Pacotes' },
   { key: 'gallery', label: 'Galeria' },
   { key: 'blog', label: 'Blog' },
@@ -69,6 +70,14 @@ const sections = [
 ];
 
 const galleryCategories = ['Espaço & Crianças felizes', 'Decoração', 'Catering'];
+const reservationStatuses = ['novo', 'contactado', 'reservado', 'pago', 'concluido'];
+const statusLabels = {
+  novo: 'Novo',
+  contactado: 'Contactado',
+  reservado: 'Reservado',
+  pago: 'Pago',
+  concluido: 'Concluído',
+};
 
 const fields = {
   packages: [
@@ -233,6 +242,124 @@ const BlogPreview = ({ post }) => (
     <div className="prose prose-sm max-w-none mt-4" dangerouslySetInnerHTML={{ __html: post.content || '<p>Conteúdo do artigo.</p>' }} />
   </div>
 );
+
+const ReservationsPanel = ({ leads = [], onReload }) => {
+  const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
+
+  const sortedLeads = [...leads].sort((a, b) => {
+    const dateA = a.event_date || '9999-12-31';
+    const dateB = b.event_date || '9999-12-31';
+    return dateA.localeCompare(dateB) || new Date(b.created_at) - new Date(a.created_at);
+  });
+
+  const updateStatus = async (lead, status) => {
+    setError('');
+    setNotice('');
+    const { error: updateError } = await supabase.from('reservation_leads').update({ status }).eq('id', lead.id);
+    if (updateError) setError(updateError.message);
+    else {
+      setNotice('Estado atualizado.');
+      await onReload();
+    }
+  };
+
+  const removeLead = async (lead) => {
+    if (!window.confirm('Apagar esta pré-reserva?')) return;
+    setError('');
+    setNotice('');
+    const { error: deleteError } = await supabase.from('reservation_leads').delete().eq('id', lead.id);
+    if (deleteError) setError(deleteError.message);
+    else {
+      setNotice('Pré-reserva apagada.');
+      await onReload();
+    }
+  };
+
+  const openLeadWhatsApp = (lead) => {
+    const phone = String(lead.phone || '').replace(/[^\d]/g, '');
+    const msg = `Olá ${lead.parent_name}, recebemos o seu pedido de pré-reserva para ${lead.event_date || 'a data pretendida'} no Espaço Girafinha.`;
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+  };
+
+  const byDate = sortedLeads.reduce((acc, lead) => {
+    const key = lead.event_date || 'Sem data';
+    acc[key] = acc[key] || [];
+    acc[key].push(lead);
+    return acc;
+  }, {});
+
+  return (
+    <div className="grid gap-6 lg:grid-cols-[1fr_360px]">
+      <Card>
+        <CardHeader>
+          <CardTitle>Pré-reservas</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {error && <p className="rounded-md bg-red-50 p-3 text-sm text-red-700">{error}</p>}
+          {notice && <p className="rounded-md bg-green-50 p-3 text-sm text-green-700">{notice}</p>}
+          {sortedLeads.length === 0 && <p className="text-gray-600">Ainda não existem pré-reservas.</p>}
+          {sortedLeads.map((lead) => (
+            <div key={lead.id} className="rounded-xl border bg-white p-4">
+              <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <h3 className="font-bold text-gray-900">{lead.parent_name}</h3>
+                    <Badge variant="secondary">{statusLabels[lead.status] || lead.status}</Badge>
+                  </div>
+                  <p className="mt-1 text-sm text-gray-600">
+                    {lead.event_date || 'Sem data'} · {lead.event_time || 'Sem horário'} · {lead.package_name || 'Sem pacote'}
+                  </p>
+                  <p className="mt-1 text-sm text-gray-600">
+                    {lead.phone}{lead.email ? ` · ${lead.email}` : ''}
+                  </p>
+                  {lead.child_name && <p className="mt-1 text-sm text-gray-600">Criança: {lead.child_name}</p>}
+                  {lead.guests_count && <p className="mt-1 text-sm text-gray-600">Convidados: {lead.guests_count}</p>}
+                  {lead.message && <p className="mt-3 rounded-lg bg-gray-50 p-3 text-sm text-gray-700">{lead.message}</p>}
+                </div>
+                <div className="flex flex-wrap gap-2 md:justify-end">
+                  <select value={lead.status} onChange={(e) => updateStatus(lead, e.target.value)} className="h-9 rounded-md border px-2 text-sm">
+                    {reservationStatuses.map((status) => <option key={status} value={status}>{statusLabels[status]}</option>)}
+                  </select>
+                  <button onClick={() => openLeadWhatsApp(lead)} className="inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm text-green-700 hover:bg-green-50">
+                    <MessageCircle className="h-4 w-4" /> WhatsApp
+                  </button>
+                  <button onClick={() => removeLead(lead)} className="inline-flex items-center gap-1 rounded-md border px-3 py-2 text-sm text-red-600 hover:bg-red-50">
+                    <Trash2 className="h-4 w-4" /> Apagar
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <CalendarDays className="h-5 w-5 text-teal-600" /> Calendário
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {Object.entries(byDate).map(([date, dateLeads]) => (
+            <div key={date} className="rounded-lg border bg-white p-3">
+              <p className="font-bold text-gray-900">{date}</p>
+              <div className="mt-2 space-y-2">
+                {dateLeads.map((lead) => (
+                  <div key={lead.id} className="text-sm text-gray-700">
+                    <span className="font-semibold">{lead.event_time || 'Horário a definir'}</span>
+                    <br />
+                    {lead.parent_name} · {statusLabels[lead.status] || lead.status}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
 
 const RichHtmlEditor = ({ label, value = '', onChange }) => {
   const textareaRef = useRef(null);
@@ -669,8 +796,9 @@ const ContentEditor = ({ active, items, onReload }) => {
 const Admin = () => {
   const [session, setSession] = useState(null);
   const [checking, setChecking] = useState(true);
-  const [active, setActive] = useState('packages');
+  const [active, setActive] = useState('reservations');
   const [content, setContent] = useState(null);
+  const [reservationLeads, setReservationLeads] = useState([]);
   const [error, setError] = useState('');
 
   const activeItems = useMemo(() => content?.[active] ?? [], [content, active]);
@@ -696,7 +824,13 @@ const Admin = () => {
   const load = async () => {
     setError('');
     try {
-      setContent(await fetchAdminContent());
+      const [nextContent, leadsResult] = await Promise.all([
+        fetchAdminContent(),
+        supabase.from('reservation_leads').select('*').order('created_at', { ascending: false }),
+      ]);
+      if (leadsResult.error) throw leadsResult.error;
+      setContent(nextContent);
+      setReservationLeads(leadsResult.data ?? []);
     } catch (err) {
       setError(err.message);
     }
@@ -744,7 +878,9 @@ const Admin = () => {
           </div>
         )}
 
-        {content ? (
+        {content && active === 'reservations' ? (
+          <ReservationsPanel leads={reservationLeads} onReload={load} />
+        ) : content ? (
           <ContentEditor active={active} items={activeItems} onReload={load} />
         ) : (
           <p className="text-gray-600">A carregar conteúdos...</p>

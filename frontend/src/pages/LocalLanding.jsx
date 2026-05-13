@@ -6,6 +6,7 @@ import SiteFooter from '../components/sections/SiteFooter';
 import FloatingWhatsApp from '../components/sections/FloatingWhatsApp';
 import Packages from '../components/sections/Packages';
 import FAQ from '../components/sections/FAQ';
+import ReservationForm from '../components/sections/ReservationForm';
 import { Button } from '../components/ui/button';
 import { Card, CardContent } from '../components/ui/card';
 import { useWhatsApp } from '../hooks/useWhatsApp';
@@ -118,6 +119,7 @@ const LocalLanding = () => {
 
         <Packages packages={content.packages} />
         <FAQ faqs={content.faqs} />
+        <ReservationForm packages={content.packages} />
       </main>
 
       <SiteFooter />

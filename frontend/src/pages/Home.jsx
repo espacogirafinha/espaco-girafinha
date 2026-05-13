@@ -10,6 +10,7 @@ import Testimonials from '../components/sections/Testimonials';
 import FAQ from '../components/sections/FAQ';
 import InstagramFeed from '../components/sections/InstagramFeed';
 import Contact from '../components/sections/Contact';
+import ReservationForm from '../components/sections/ReservationForm';
 import SiteFooter from '../components/sections/SiteFooter';
 import { PrivacyModal, TermsModal } from '../components/sections/LegalModals';
 import FloatingWhatsApp from '../components/sections/FloatingWhatsApp';
@@ -53,6 +54,7 @@ const Home = () => {
       <WhyChooseUs />
       <Testimonials testimonials={content.testimonials} />
       <FAQ faqs={content.faqs} />
+      <ReservationForm packages={content.packages} />
       <InstagramFeed />
       <Contact />
       <SiteFooter onOpenPrivacy={() => setShowPrivacy(true)} onOpenTerms={() => setShowTerms(true)} />
