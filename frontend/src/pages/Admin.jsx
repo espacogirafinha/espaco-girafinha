@@ -824,13 +824,15 @@ const Admin = () => {
   const load = async () => {
     setError('');
     try {
-      const [nextContent, leadsResult] = await Promise.all([
-        fetchAdminContent(),
-        supabase.from('reservation_leads').select('*').order('created_at', { ascending: false }),
-      ]);
-      if (leadsResult.error) throw leadsResult.error;
+      const nextContent = await fetchAdminContent();
+      const leadsResult = await supabase.from('reservation_leads').select('*').order('created_at', { ascending: false });
       setContent(nextContent);
-      setReservationLeads(leadsResult.data ?? []);
+      if (leadsResult.error) {
+        setReservationLeads([]);
+        setError('A tabela de pré-reservas ainda não está criada no Supabase. Corre o SQL reservation_leads.sql.');
+      } else {
+        setReservationLeads(leadsResult.data ?? []);
+      }
     } catch (err) {
       setError(err.message);
     }
