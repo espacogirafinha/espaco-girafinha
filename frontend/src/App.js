@@ -4,6 +4,7 @@ import Home from "./pages/Home";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Admin from "./pages/Admin";
+import LocalLanding from "./pages/LocalLanding";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="/dicas" element={<Blog />} />
           <Route path="/dicas/:slug" element={<BlogPost />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/:slug" element={<LocalLanding />} />
         </Routes>
       </BrowserRouter>
     </div>

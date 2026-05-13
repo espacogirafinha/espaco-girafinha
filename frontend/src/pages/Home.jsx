@@ -14,6 +14,7 @@ import SiteFooter from '../components/sections/SiteFooter';
 import { PrivacyModal, TermsModal } from '../components/sections/LegalModals';
 import FloatingWhatsApp from '../components/sections/FloatingWhatsApp';
 import { useSiteContent } from '../hooks/useSiteContent';
+import { localBusinessSchema, partyServiceSchema } from '../lib/seo';
 
 const Home = () => {
   const [showPrivacy, setShowPrivacy] = useState(false);
@@ -42,6 +43,7 @@ const Home = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-teal-50 via-yellow-50 to-green-50">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([localBusinessSchema, partyServiceSchema]) }} />
       <SiteHeader />
       <Hero />
       <About />
