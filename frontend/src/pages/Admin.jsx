@@ -68,6 +68,8 @@ const sections = [
   { key: 'testimonials', label: 'Testemunhos' },
 ];
 
+const galleryCategories = ['Espaço & Crianças felizes', 'Decoração', 'Catering'];
+
 const fields = {
   packages: [
     ['name', 'Nome'],
@@ -250,6 +252,7 @@ const ContentEditor = ({ active, items, onReload }) => {
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const isGallery = active === 'gallery';
 
   useEffect(() => {
     setEditing(null);
@@ -316,6 +319,34 @@ const ContentEditor = ({ active, items, onReload }) => {
     setSaving(false);
   };
 
+  const renderListItem = (item) => (
+    <div key={item.id} className="border rounded-lg p-3 bg-white">
+      <button onClick={() => startEdit(item)} className="text-left w-full">
+        <div className={isGallery ? 'flex items-center gap-3' : ''}>
+          {isGallery && (
+            <div className="h-14 w-14 flex-shrink-0 overflow-hidden rounded-md bg-gray-100 border">
+              {item.src ? (
+                <img src={item.src} alt={item.alt || ''} loading="lazy" className="h-full w-full object-cover" />
+              ) : (
+                <div className="h-full w-full bg-gray-100" />
+              )}
+            </div>
+          )}
+          <div className="min-w-0">
+            <p className="font-semibold text-gray-900 line-clamp-2">{item.name || item.title || item.question || item.author || item.alt}</p>
+            <div className="flex items-center gap-2 mt-2">
+              <Badge variant="secondary">{item.is_published ? 'Publicado' : 'Rascunho'}</Badge>
+              <span className="text-xs text-gray-500">#{item.sort_order ?? item.id}</span>
+            </div>
+          </div>
+        </div>
+      </button>
+      <button onClick={() => remove(item)} className="mt-2 text-xs text-red-600 hover:text-red-700 inline-flex items-center gap-1">
+        <Trash2 className="h-3 w-3" /> Apagar
+      </button>
+    </div>
+  );
+
   return (
     <div className="grid lg:grid-cols-[360px_1fr] gap-6">
       <Card>
@@ -338,20 +369,20 @@ const ContentEditor = ({ active, items, onReload }) => {
             </div>
           )}
 
-          {items.map((item) => (
-            <div key={item.id} className="border rounded-lg p-3 bg-white">
-              <button onClick={() => startEdit(item)} className="text-left w-full">
-                <p className="font-semibold text-gray-900 line-clamp-2">{item.name || item.title || item.question || item.author || item.alt}</p>
-                <div className="flex items-center gap-2 mt-2">
-                  <Badge variant="secondary">{item.is_published ? 'Publicado' : 'Rascunho'}</Badge>
-                  <span className="text-xs text-gray-500">#{item.sort_order ?? item.id}</span>
+          {isGallery ? (
+            galleryCategories.map((category) => {
+              const categoryItems = items.filter((item) => item.category === category);
+              if (categoryItems.length === 0) return null;
+              return (
+                <div key={category} className="space-y-2">
+                  <h3 className="text-xs font-bold uppercase tracking-wide text-gray-500">{category}</h3>
+                  {categoryItems.map(renderListItem)}
                 </div>
-              </button>
-              <button onClick={() => remove(item)} className="mt-2 text-xs text-red-600 hover:text-red-700 inline-flex items-center gap-1">
-                <Trash2 className="h-3 w-3" /> Apagar
-              </button>
-            </div>
-          ))}
+              );
+            })
+          ) : (
+            items.map(renderListItem)
+          )}
         </CardContent>
       </Card>
 
@@ -362,6 +393,15 @@ const ContentEditor = ({ active, items, onReload }) => {
         <CardContent>
           {editing ? (
             <div className="space-y-4">
+              {isGallery && editing.src && (
+                <div>
+                  <span className="text-sm font-semibold text-gray-700">Pré-visualização</span>
+                  <div className="mt-2 overflow-hidden rounded-lg border bg-gray-100 max-w-md">
+                    <img src={editing.src} alt={editing.alt || ''} className="h-64 w-full object-cover" />
+                  </div>
+                </div>
+              )}
+
               {fields[active].map((field) => (
                 <Field key={field[0]} field={field} item={editing} onChange={update} onUpload={upload} />
               ))}
