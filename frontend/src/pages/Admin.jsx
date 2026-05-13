@@ -116,11 +116,15 @@ const toDbPayload = (key, item) => {
   if (key === 'packages') {
     payload.original_price = item.original_price ?? item.originalPrice ?? '';
     payload.is_promotion = item.is_promotion ?? item.isPromotion ?? false;
+    delete payload.originalPrice;
+    delete payload.isPromotion;
   }
 
   if (key === 'blog') {
     payload.image_alt = item.image_alt ?? item.imageAlt ?? '';
     payload.read_time = item.read_time ?? item.readTime ?? '5 min';
+    delete payload.imageAlt;
+    delete payload.readTime;
   }
 
   return payload;
