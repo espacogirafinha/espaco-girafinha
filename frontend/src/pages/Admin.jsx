@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import { ArrowDown, ArrowUp, Copy, Eye, LogOut, Plus, Save, Trash2, Upload } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -234,6 +234,76 @@ const BlogPreview = ({ post }) => (
   </div>
 );
 
+const RichHtmlEditor = ({ label, value = '', onChange }) => {
+  const textareaRef = useRef(null);
+
+  const applyFormat = ({ before, after = '', placeholder = 'texto' }) => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
+    const selected = value.slice(start, end) || placeholder;
+    const next = `${value.slice(0, start)}${before}${selected}${after}${value.slice(end)}`;
+    onChange(next);
+
+    requestAnimationFrame(() => {
+      textarea.focus();
+      textarea.setSelectionRange(start + before.length, start + before.length + selected.length);
+    });
+  };
+
+  const insertBlock = (tag) => applyFormat({ before: `<${tag}>`, after: `</${tag}>`, placeholder: tag === 'p' ? 'Novo parágrafo' : 'Novo título' });
+  const insertList = (tag) => applyFormat({ before: `<${tag}>\n  <li>`, after: `</li>\n</${tag}>`, placeholder: 'Item da lista' });
+  const insertLink = () => {
+    const url = window.prompt('URL do link');
+    if (!url) return;
+    applyFormat({ before: `<a href="${url}" target="_blank" rel="noopener noreferrer">`, after: '</a>', placeholder: 'texto do link' });
+  };
+
+  const toolbar = [
+    { label: 'P', title: 'Parágrafo', action: () => insertBlock('p') },
+    { label: 'H2', title: 'Título grande', action: () => insertBlock('h2') },
+    { label: 'H3', title: 'Título médio', action: () => insertBlock('h3') },
+    { label: 'B', title: 'Negrito', action: () => applyFormat({ before: '<strong>', after: '</strong>' }) },
+    { label: 'I', title: 'Itálico', action: () => applyFormat({ before: '<em>', after: '</em>' }) },
+    { label: 'Peq.', title: 'Texto pequeno', action: () => applyFormat({ before: '<span style="font-size: 0.875rem;">', after: '</span>' }) },
+    { label: 'Gr.', title: 'Texto grande', action: () => applyFormat({ before: '<span style="font-size: 1.25rem;">', after: '</span>' }) },
+    { label: '• Lista', title: 'Lista com pontos', action: () => insertList('ul') },
+    { label: '1. Lista', title: 'Lista numerada', action: () => insertList('ol') },
+    { label: 'Quote', title: 'Citação', action: () => applyFormat({ before: '<blockquote>', after: '</blockquote>', placeholder: 'Citação' }) },
+    { label: 'Link', title: 'Link', action: insertLink },
+  ];
+
+  return (
+    <div>
+      <span className="text-sm font-semibold text-gray-700">{label}</span>
+      <div className="mt-2 rounded-lg border bg-white">
+        <div className="flex flex-wrap gap-2 border-b bg-gray-50 p-2">
+          {toolbar.map((item) => (
+            <button
+              key={item.title}
+              type="button"
+              title={item.title}
+              onClick={item.action}
+              className="rounded-md border bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 hover:bg-teal-50 hover:text-teal-700">
+              {item.label}
+            </button>
+          ))}
+        </div>
+        <Textarea
+          ref={textareaRef}
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          rows={12}
+          className="min-h-[260px] border-0 font-mono text-sm focus-visible:ring-0"
+        />
+      </div>
+      <p className="mt-2 text-xs text-gray-500">Seleciona texto e carrega num botão para aplicar o formato. O preview aparece abaixo.</p>
+    </div>
+  );
+};
+
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -279,6 +349,10 @@ const Field = ({ field, item, onChange, onUpload }) => {
   }
 
   if (type === 'textarea') {
+    if (name === 'content') {
+      return <RichHtmlEditor label={label} value={value} onChange={(next) => onChange(name, next)} />;
+    }
+
     return (
       <label className="block">
         <span className="text-sm font-semibold text-gray-700">{label}</span>
