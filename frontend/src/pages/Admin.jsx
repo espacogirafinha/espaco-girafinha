@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { LogOut, Plus, Save, Trash2, Upload } from 'lucide-react';
+import { ArrowDown, ArrowUp, Copy, Eye, LogOut, Plus, Save, Trash2, Upload } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Textarea } from '../components/ui/textarea';
@@ -163,6 +163,77 @@ const parseJsonList = (value) => {
   }
 };
 
+const arrayMove = (items, from, to) => {
+  const next = [...items];
+  const [item] = next.splice(from, 1);
+  next.splice(to, 0, item);
+  return next;
+};
+
+const ListEditor = ({ label, value = [], onChange }) => {
+  const items = Array.isArray(value) ? value : [];
+
+  const updateItem = (index, nextValue) => {
+    onChange(items.map((item, itemIndex) => (itemIndex === index ? nextValue : item)));
+  };
+
+  const removeItem = (index) => {
+    onChange(items.filter((_, itemIndex) => itemIndex !== index));
+  };
+
+  const moveItem = (index, direction) => {
+    const nextIndex = index + direction;
+    if (nextIndex < 0 || nextIndex >= items.length) return;
+    onChange(arrayMove(items, index, nextIndex));
+  };
+
+  return (
+    <div>
+      <div className="flex items-center justify-between gap-3">
+        <span className="text-sm font-semibold text-gray-700">{label}</span>
+        <Button type="button" variant="outline" size="sm" onClick={() => onChange([...items, ''])}>
+          <Plus className="h-3 w-3 mr-1" /> Adicionar
+        </Button>
+      </div>
+      <div className="mt-2 space-y-2">
+        {items.length === 0 && <p className="text-xs text-gray-500 rounded-md border border-dashed p-3">Sem itens nesta lista.</p>}
+        {items.map((item, index) => (
+          <div key={index} className="flex items-center gap-2">
+            <Input value={item} onChange={(event) => updateItem(index, event.target.value)} />
+            <button type="button" onClick={() => moveItem(index, -1)} className="rounded-md border p-2 text-gray-600 hover:bg-gray-50" aria-label="Subir item">
+              <ArrowUp className="h-4 w-4" />
+            </button>
+            <button type="button" onClick={() => moveItem(index, 1)} className="rounded-md border p-2 text-gray-600 hover:bg-gray-50" aria-label="Descer item">
+              <ArrowDown className="h-4 w-4" />
+            </button>
+            <button type="button" onClick={() => removeItem(index)} className="rounded-md border p-2 text-red-600 hover:bg-red-50" aria-label="Apagar item">
+              <Trash2 className="h-4 w-4" />
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const BlogPreview = ({ post }) => (
+  <div className="rounded-xl border bg-white p-5">
+    <div className="flex items-center gap-2 mb-4 text-teal-700">
+      <Eye className="h-4 w-4" />
+      <span className="text-sm font-bold">Preview do artigo</span>
+    </div>
+    {post.image && (
+      <div className="aspect-[16/8] overflow-hidden rounded-lg bg-gray-100 mb-4">
+        <img src={post.image} alt={post.image_alt || post.title || ''} className="h-full w-full object-cover" />
+      </div>
+    )}
+    <p className="text-xs font-semibold uppercase tracking-wide text-teal-600">{post.category || 'Dicas'}</p>
+    <h2 className="text-2xl font-bold text-gray-900 mt-1">{post.title || 'Título do artigo'}</h2>
+    <p className="text-sm text-gray-600 mt-2">{post.excerpt || 'Resumo do artigo.'}</p>
+    <div className="prose prose-sm max-w-none mt-4" dangerouslySetInnerHTML={{ __html: post.content || '<p>Conteúdo do artigo.</p>' }} />
+  </div>
+);
+
 const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -204,17 +275,7 @@ const Field = ({ field, item, onChange, onUpload }) => {
   const value = item[name] ?? '';
 
   if (type === 'json') {
-    return (
-      <label className="block">
-        <span className="text-sm font-semibold text-gray-700">{label}</span>
-        <Textarea
-          value={Array.isArray(value) ? value.join('\n') : value}
-          onChange={(event) => onChange(name, parseJsonList(event.target.value))}
-          rows={4}
-          className="mt-1"
-        />
-      </label>
-    );
+    return <ListEditor label={label} value={parseJsonList(Array.isArray(value) ? value : String(value ?? ''))} onChange={(next) => onChange(name, next)} />;
   }
 
   if (type === 'textarea') {
@@ -227,6 +288,22 @@ const Field = ({ field, item, onChange, onUpload }) => {
   }
 
   const isImageField = ['src', 'image'].includes(name);
+
+  if (name === 'category' && item.src !== undefined) {
+    return (
+      <label className="block">
+        <span className="text-sm font-semibold text-gray-700">{label}</span>
+        <select
+          value={value}
+          onChange={(event) => onChange(name, event.target.value)}
+          className="mt-1 h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm">
+          {galleryCategories.map((category) => (
+            <option key={category} value={category}>{category}</option>
+          ))}
+        </select>
+      </label>
+    );
+  }
 
   return (
     <label className="block">
@@ -252,17 +329,22 @@ const ContentEditor = ({ active, items, onReload }) => {
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
   const isGallery = active === 'gallery';
 
   useEffect(() => {
     setEditing(null);
     setError('');
+    setNotice('');
   }, [active]);
 
   const startNew = () => setEditing({ ...emptyItems[active] });
   const startEdit = (item) => setEditing(toAdminItem(active, item));
 
-  const update = (name, value) => setEditing((current) => ({ ...current, [name]: value }));
+  const update = (name, value) => {
+    setNotice('');
+    setEditing((current) => ({ ...current, [name]: value }));
+  };
 
   const upload = async (name, file) => {
     if (!file) return;
@@ -291,6 +373,7 @@ const ContentEditor = ({ active, items, onReload }) => {
     else {
       setEditing(null);
       await onReload();
+      setNotice('Guardado com sucesso.');
     }
     setSaving(false);
   };
@@ -299,7 +382,53 @@ const ContentEditor = ({ active, items, onReload }) => {
     if (!window.confirm('Apagar este item?')) return;
     const { error: deleteError } = await supabase.from(tableForKey(active)).delete().eq('id', item.id);
     if (deleteError) setError(deleteError.message);
-    else await onReload();
+    else {
+      await onReload();
+      setNotice('Item apagado.');
+    }
+  };
+
+  const duplicate = async (item) => {
+    setSaving(true);
+    setError('');
+    setNotice('');
+    const copyItem = toAdminItem(active, item);
+    delete copyItem.id;
+    copyItem.sort_order = (item.sort_order ?? item.id ?? 0) + 1;
+    if (active === 'blog') copyItem.slug = `${copyItem.slug || 'artigo'}-copia-${Date.now()}`;
+    if (copyItem.name) copyItem.name = `${copyItem.name} (cópia)`;
+    if (copyItem.title) copyItem.title = `${copyItem.title} (cópia)`;
+    if (copyItem.question) copyItem.question = `${copyItem.question} (cópia)`;
+    const { error: duplicateError } = await supabase.from(tableForKey(active)).insert(toDbPayload(active, copyItem));
+    if (duplicateError) setError(duplicateError.message);
+    else {
+      await onReload();
+      setNotice('Item duplicado.');
+    }
+    setSaving(false);
+  };
+
+  const moveSavedItem = async (item, direction) => {
+    const sorted = [...items].sort((a, b) => (a.sort_order ?? a.id ?? 0) - (b.sort_order ?? b.id ?? 0));
+    const currentIndex = sorted.findIndex((entry) => entry.id === item.id);
+    const nextIndex = currentIndex + direction;
+    if (currentIndex < 0 || nextIndex < 0 || nextIndex >= sorted.length) return;
+
+    const reordered = arrayMove(sorted, currentIndex, nextIndex);
+    setSaving(true);
+    setError('');
+    setNotice('');
+    const updates = reordered.map((entry, index) =>
+      supabase.from(tableForKey(active)).update({ sort_order: index }).eq('id', entry.id)
+    );
+    const results = await Promise.all(updates);
+    const updateError = results.find((result) => result.error)?.error;
+    if (updateError) setError(updateError.message);
+    else {
+      await onReload();
+      setNotice('Ordem atualizada.');
+    }
+    setSaving(false);
   };
 
   const importInitialContent = async () => {
@@ -315,7 +444,10 @@ const ContentEditor = ({ active, items, onReload }) => {
     }));
     const { error: importError } = await supabase.from(tableForKey(active)).insert(rows);
     if (importError) setError(importError.message);
-    else await onReload();
+    else {
+      await onReload();
+      setNotice('Conteúdo importado.');
+    }
     setSaving(false);
   };
 
@@ -341,9 +473,20 @@ const ContentEditor = ({ active, items, onReload }) => {
           </div>
         </div>
       </button>
-      <button onClick={() => remove(item)} className="mt-2 text-xs text-red-600 hover:text-red-700 inline-flex items-center gap-1">
-        <Trash2 className="h-3 w-3" /> Apagar
-      </button>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <button onClick={() => moveSavedItem(item, -1)} className="text-xs text-gray-600 hover:text-teal-700 inline-flex items-center gap-1">
+          <ArrowUp className="h-3 w-3" /> Subir
+        </button>
+        <button onClick={() => moveSavedItem(item, 1)} className="text-xs text-gray-600 hover:text-teal-700 inline-flex items-center gap-1">
+          <ArrowDown className="h-3 w-3" /> Descer
+        </button>
+        <button onClick={() => duplicate(item)} className="text-xs text-gray-600 hover:text-teal-700 inline-flex items-center gap-1">
+          <Copy className="h-3 w-3" /> Duplicar
+        </button>
+        <button onClick={() => remove(item)} className="text-xs text-red-600 hover:text-red-700 inline-flex items-center gap-1">
+          <Trash2 className="h-3 w-3" /> Apagar
+        </button>
+      </div>
     </div>
   );
 
@@ -359,6 +502,9 @@ const ContentEditor = ({ active, items, onReload }) => {
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
+          {error && <p className="rounded-md bg-red-50 p-3 text-sm text-red-700">{error}</p>}
+          {notice && <p className="rounded-md bg-green-50 p-3 text-sm text-green-700">{notice}</p>}
+
           {items.length === 0 && (
             <div className="rounded-lg border border-dashed border-teal-300 bg-teal-50 p-4">
               <p className="text-sm text-teal-900 font-semibold mb-2">Esta secção ainda não tem dados.</p>
@@ -406,6 +552,8 @@ const ContentEditor = ({ active, items, onReload }) => {
                 <Field key={field[0]} field={field} item={editing} onChange={update} onUpload={upload} />
               ))}
 
+              {active === 'blog' && <BlogPreview post={editing} />}
+
               <div className="grid sm:grid-cols-3 gap-3">
                 <label>
                   <span className="text-sm font-semibold text-gray-700">Ordem</span>
@@ -429,7 +577,8 @@ const ContentEditor = ({ active, items, onReload }) => {
                 </label>
               </div>
 
-              {error && <p className="text-sm text-red-600">{error}</p>}
+              {error && <p className="rounded-md bg-red-50 p-3 text-sm text-red-700">{error}</p>}
+              {notice && <p className="rounded-md bg-green-50 p-3 text-sm text-green-700">{notice}</p>}
               <Button onClick={save} disabled={saving} className="bg-teal-600 hover:bg-teal-700">
                 <Save className="h-4 w-4 mr-2" /> {saving ? 'A guardar...' : 'Guardar'}
               </Button>
