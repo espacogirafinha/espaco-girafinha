@@ -24,6 +24,8 @@ const posts = [...blogSource.matchAll(/{\s*id:\s*\d+,\s*slug:\s*"([^"]+)"[\s\S]*
 const staticUrls = [
   { loc: `${SITE_URL}/`, changefreq: 'weekly', priority: '1.0' },
   { loc: `${SITE_URL}/dicas`, changefreq: 'weekly', priority: '0.8' },
+  { loc: `${SITE_URL}/galeria`, changefreq: 'weekly', priority: '0.8' },
+  { loc: `${SITE_URL}/perguntas-frequentes`, changefreq: 'monthly', priority: '0.7' },
   { loc: `${SITE_URL}/festas-infantis-silves`, changefreq: 'monthly', priority: '0.9' },
   { loc: `${SITE_URL}/festas-infantis-algarve`, changefreq: 'monthly', priority: '0.9' },
   { loc: `${SITE_URL}/aluguer-espaco-festas-infantis`, changefreq: 'monthly', priority: '0.9' },

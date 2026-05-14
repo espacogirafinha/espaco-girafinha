@@ -4,10 +4,8 @@ import Hero from '../components/sections/Hero';
 import About from '../components/sections/About';
 import Packages from '../components/sections/Packages';
 import FoodOptions from '../components/sections/FoodOptions';
-import Gallery from '../components/sections/Gallery';
 import WhyChooseUs from '../components/sections/WhyChooseUs';
 import Testimonials from '../components/sections/Testimonials';
-import FAQ from '../components/sections/FAQ';
 import InstagramFeed from '../components/sections/InstagramFeed';
 import Contact from '../components/sections/Contact';
 import ReservationForm from '../components/sections/ReservationForm';
@@ -50,10 +48,8 @@ const Home = () => {
       <About />
       <Packages packages={content.packages} />
       <FoodOptions />
-      <Gallery galleryImages={content.gallery} />
       <WhyChooseUs />
       <Testimonials testimonials={content.testimonials} />
-      <FAQ faqs={content.faqs} />
       <ReservationForm packages={content.packages} />
       <InstagramFeed />
       <Contact />

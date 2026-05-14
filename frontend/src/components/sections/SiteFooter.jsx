@@ -25,6 +25,12 @@ const SiteFooter = ({ onOpenPrivacy, onOpenTerms }) => (
         <Link to="/dicas" className="text-gray-400 hover:text-white transition-colors underline" data-testid="footer-blog-link">
           Dicas & Ideias
         </Link>
+        <Link to="/galeria" className="text-gray-400 hover:text-white transition-colors underline">
+          Galeria
+        </Link>
+        <Link to="/perguntas-frequentes" className="text-gray-400 hover:text-white transition-colors underline">
+          Perguntas Frequentes
+        </Link>
         <button onClick={onOpenPrivacy} className="text-gray-400 hover:text-white transition-colors underline">
           Política de Privacidade
         </button>

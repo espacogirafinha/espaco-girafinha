@@ -5,6 +5,8 @@ import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Admin from "./pages/Admin";
 import LocalLanding from "./pages/LocalLanding";
+import GalleryPage from "./pages/GalleryPage";
+import FAQPage from "./pages/FAQPage";
 
 function App() {
   return (
@@ -14,6 +16,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/dicas" element={<Blog />} />
           <Route path="/dicas/:slug" element={<BlogPost />} />
+          <Route path="/galeria" element={<GalleryPage />} />
+          <Route path="/perguntas-frequentes" element={<FAQPage />} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/:slug" element={<LocalLanding />} />
         </Routes>

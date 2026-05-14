@@ -3,10 +3,11 @@ import { Link } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
 
 const navItems = [
-  { label: 'Sobre', href: '#sobre' },
-  { label: 'Pacotes', href: '#pacotes' },
-  { label: 'Galeria', href: '#galeria' },
-  { label: 'Contacto', href: '#contacto' },
+  { label: 'Sobre', href: '/#sobre' },
+  { label: 'Pacotes', href: '/#pacotes' },
+  { label: 'Galeria', href: '/galeria' },
+  { label: 'FAQ', href: '/perguntas-frequentes' },
+  { label: 'Contacto', href: '/#contacto' },
 ];
 
 const SiteHeader = () => {

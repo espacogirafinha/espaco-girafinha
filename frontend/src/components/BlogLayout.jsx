@@ -6,7 +6,8 @@ import { contactInfo } from '../data/mock';
 const navLinks = [
   { label: 'Sobre', to: '/#sobre', testId: 'nav-sobre' },
   { label: 'Pacotes', to: '/#pacotes', testId: 'nav-pacotes' },
-  { label: 'Galeria', to: '/#galeria', testId: 'nav-galeria' },
+  { label: 'Galeria', to: '/galeria', testId: 'nav-galeria' },
+  { label: 'FAQ', to: '/perguntas-frequentes', testId: 'nav-faq' },
   { label: 'Contacto', to: '/#contacto', testId: 'nav-contacto' },
 ];
 
@@ -101,6 +102,8 @@ const BlogLayout = ({ children }) => {
           </div>
           <div className="flex flex-wrap justify-center gap-4 mb-4 text-sm">
             <Link to="/dicas" className="text-gray-400 hover:text-white transition-colors underline" data-testid="footer-blog-link">Dicas & Ideias</Link>
+            <Link to="/galeria" className="text-gray-400 hover:text-white transition-colors underline">Galeria</Link>
+            <Link to="/perguntas-frequentes" className="text-gray-400 hover:text-white transition-colors underline">Perguntas Frequentes</Link>
             <a href="https://www.livroreclamacoes.pt/Inicio/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors underline">
               Livro de Reclamações
             </a>
